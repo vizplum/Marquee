@@ -1,0 +1,16 @@
+{
+	"name": "Marquee_Vizplum",
+	"description": "Marquee extension that helps to show the scrolling text with selections enabled",
+	"type": "visualization",
+	"version": "1.0.0",
+	"icon": "list",
+	"preview": "Marquee_Vizplum.png",
+	"author": "Kumar from Vizplum Corporation",
+	"homepage": "",
+	"keywords": "qlik-sense, visualization",
+	"license": "",
+	"repository": "",
+	"dependencies": {
+		"qlik-sense": ">=1.0.x"
+	}
+}
