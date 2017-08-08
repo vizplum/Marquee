@@ -3,6 +3,10 @@ Created by Kumar from Vizplum Corporation
 
 */
 
+/*
+Modified by Ravisankar Avidi from Vizplum Corporation
+*/
+
 
 define(["jquery"], function($, cssContent) {
     'use strict';
@@ -18,7 +22,8 @@ define(["jquery"], function($, cssContent) {
                     qWidth: 50,
                     qHeight: 50
                 }]
-            }
+            },
+			LabelAlign: "center"
         },
         definition: {
             type: "items",
@@ -48,17 +53,18 @@ define(["jquery"], function($, cssContent) {
                             component: "dropdown",
                             label: "Marquee Type",
                             options: [{
-                                value: "Right to Left",
-                                label: "Right to Left"
-                            }, {
-                                value: "Left to Right",
-                                label: "Left to Right"
-                            }, {
+                                value: "Bottom to Top",
+                                label: "Bottom to Top"
+                            },{
                                 value: "Top to Bottom",
                                 label: "Top to Bottom"
                             }, {
-                                value: "Bottom to Top",
-                                label: "Bottom to Top"
+                                value: "Left to Right",
+                                label: "Left to Right"
+                            },
+							{
+                                value: "Right to Left",
+                                label: "Right to Left"
                             }],
                             defaultValue: "Right to Left"
                         },
@@ -74,7 +80,7 @@ define(["jquery"], function($, cssContent) {
                             ref: "TextColor",
                             label: "Text color",
                             expression: "always",
-                            defaultValue: "#545352"
+                            defaultValue: "#6495ed"
                         },
 
                         FontFamily: {
@@ -82,7 +88,7 @@ define(["jquery"], function($, cssContent) {
                             ref: "FontFamily",
                             label: "Font Family",
                             expression: "always",
-                            defaultValue: "verdana"
+                            defaultValue: "Times New Roman"
                         },
                         FontType: {
                             type: "string",
@@ -104,22 +110,13 @@ define(["jquery"], function($, cssContent) {
                             expression: "always",
                             defaultValue: "100%"
                         },
-                        selection: {
-                            type: "string",
-                            component: "dropdown",
-                            label: "Selection mode",
-                            ref: "selectionMode",
-                            options: [{
-                                value: "YES",
-                                label: "Enabled"
-                            }, {
-                                value: "NO",
-                                label: "Disabled"
-                            }]
-                        }
-
-
-
+						
+						CompareText: {
+							type: "string",
+							ref: "CompareText",
+							label: "Compare Value"							
+						},
+                        
                     }
 
 
@@ -153,10 +150,10 @@ define(["jquery"], function($, cssContent) {
                     height: height,
                     width: width,
                     overflow: 'auto'
-                }))
+                }))				
             }
-
-
+			
+			
 
             var html = "",
                 self = this,
@@ -170,8 +167,8 @@ define(["jquery"], function($, cssContent) {
             else if (layout.MarqueeType == 'Top to Bottom')
                 MarqueeStyle = 'direction="down"';
 
-            html = html + "<marquee " + MarqueeStyle + " bgcolor=" + layout.BackgroundColor + " WIDTH=" + width + " HEIGHT=" + height + '>';
-
+            html = html + "<marquee onmouseover='this.stop();' onmouseout='this.start();' " + MarqueeStyle + " bgcolor=" + layout.BackgroundColor + " WIDTH=" + width + " HEIGHT=" + height + '>';
+			
 
             var id = "container_" + layout.qInfo.qId;
             $("#" + id).css('cursor', 'default');
@@ -196,45 +193,49 @@ define(["jquery"], function($, cssContent) {
             var data = layout.qHyperCube.qDataPages[0].qMatrix
                 .map(function(r) {
                     var row = {};
-
-                    r.forEach(function(d, i) {
+					
+		if(r && r.length == 2) {
+			var d1 = r[0];
+			var d2 = r[1];
+			var measureValue = parseFloat(d2.qText);
+			var compareValue = parseFloat(layout.CompareText);
+			var colorValue = 'blue';
+			if($.trim(layout.CompareText).length > 0)
+				 colorValue = (measureValue === compareValue) ? 'yellow' : ((measureValue > compareValue) ? 'green' : 'red');
+			// Code for dimension
+			if (layout.MarqueeType == 'Bottom to Top' || layout.MarqueeType == 'Top to Bottom')
+                                html += FontType + style1 + '">';
+                        html += '<de ' + ' class="data state' + d1.qState + '" data-value="' + d1.qElemNumber + '">';
+                        html += '<span style="color: ' + colorValue + '">' + d1.qText;
+			// Code for measure
+			html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + d2.qText + '</span>';
+                        html += "</de>";
+                        if (layout.MarqueeType == 'Bottom to Top' || layout.MarqueeType == 'Top to Bottom')
+                            html += "<br>";
+		}
+		else{
+			r.forEach(function(d, i) {
                         if (i == 0) {
                             if (layout.MarqueeType == 'Bottom to Top' || layout.MarqueeType == 'Top to Bottom')
                                 html += FontType + style1 + '">';
                             html += '<de ' + ' class="data state' + d.qState + '" data-value="' + d.qElemNumber + '">';
-                            html += d.qText;
+                            html += '<span style="color: ' + colorValue + '">' + d.qText;
                         } else {
-                            html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + d.qText;
+                            html += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + d.qText + '</span>';
                             html += "</de>";
                             if (layout.MarqueeType == 'Bottom to Top' || layout.MarqueeType == 'Top to Bottom')
                                 html += "<br>";
-
                         }
                     });
+					}
+
                     html += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
 
                 });
 
-
             html += "</marquee>";
             $element.html(html);
 		  console.log(html);
-
-            if (this.selectionsEnabled && layout.selectionMode !== "NO") {
-
-                $element.find('de').on('qv-activate', function() {
-                    if (this.hasAttribute("data-value")) {
-                        var value = parseInt(this.getAttribute("data-value"), 10),
-                            dim = 0;
-					  console.log(value);
-                        self.backendApi.selectValues(dim, [value], false);
-                    }
-                });
-
-
-            }
-
-
 
         }
 
