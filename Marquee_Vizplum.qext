@@ -1,5 +1,5 @@
 {
-	"name": "Marquee_Vizplum",
+	"name": "MarqueeCompare_Vizplum",
 	"description": "Scrolling Text Object with Compare option and a feature to stop the scrolling and check on mousehover",
 	"type": "visualization",
 	"version": "1.2.0",
