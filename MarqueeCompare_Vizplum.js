@@ -30,7 +30,7 @@ define(["jquery"], function($, cssContent) {
                 dimensions: {
                     uses: "dimensions",
                     min: 1,
-                    max: 1
+                    max: 4
                 },
                 measures: {
                     uses: "measures",
